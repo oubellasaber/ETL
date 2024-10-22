@@ -37,7 +37,7 @@ namespace BLL.DramaDay.Extract
         public void Extract(string url)
         {
             DramaGeneralDataExtractor ext = new DramaGeneralDataExtractor(_htmlDocLoader.GetNode("//div[@class='wpb_wrapper']/p"), url);
-            Drama drama = ext.GetDramaWithGeneralData();
+            drama = ext.GetDramaWithGeneralData();
 
             foreach (var row in _rows)
             {
@@ -57,7 +57,7 @@ namespace BLL.DramaDay.Extract
         {
             if (!drama.StandardEpsDictionary.ContainsKey(key))
             {
-                drama.StandardEpsDictionary.Add(key, new());
+                drama.StandardEpsDictionary.Add(key, new List<StandardEp>());
             }
         }
 

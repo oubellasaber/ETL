@@ -9,8 +9,14 @@ namespace BLL.DramaDay.Extract.Models
         public List<string> OtherTitles { get; set; }
         public int TotalEps { get; set; }
         public string BroadcastNetwork { get; set; }
+
+        // I do care about these thow attributes  only if the drama is still airing
+        // if completed do not bother
+        // drama might be completed but still  marked as airing in dramaday
+        // due to the fact that the admin didnt yet update it with the last episode
         public BroadcastPeriod? BroadcastPeriod { get; set; }
         public AirTime? AirTime { get; set; }
+
         public Dictionary<string, List<StandardEp>> StandardEpsDictionary { get; set; }
         public Dictionary<string, List<RangedEps>> RangedEpsDictionary { get; set; }
 

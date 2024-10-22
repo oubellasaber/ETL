@@ -14,11 +14,15 @@
   <ItemGroup>
     <Folder Include="DramaDay\Load\" />
     <Folder Include="DramaDay\Transform\" />
-    <Folder Include="Services\" />
+    <Folder Include="Services\MDLService\" />
+    <Folder Include="Services\VideoMetadataExtractionService\" />
+    <Folder Include="Services\SubtitlesUploadService\" />
+    <Folder Include="Services\SubtitlesExtractionService\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.67" />
+    <PackageReference Include="PuppeteerSharp" Version="20.0.2" />
   </ItemGroup>
 
 </Project>

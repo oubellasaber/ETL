@@ -65,7 +65,7 @@ namespace BLL.DramaDay.Extract
         {
             if (_dictionary.TryGetValue("air time", out string airTime))
             {
-                return airTime.Contains("to") ? AirTime.FromString(airTime) : null;
+                return AirTime.FromString(airTime);
             }
             return null;
         }
@@ -74,7 +74,7 @@ namespace BLL.DramaDay.Extract
         {
             if (_dictionary.TryGetValue("broadcast period", out string broadcastPeriod))
             {
-                return BroadcastPeriod.FromString(broadcastPeriod);
+                return broadcastPeriod.Contains("to") ? BroadcastPeriod.FromString(broadcastPeriod) : null;
             }
             return null;
         }
@@ -93,7 +93,7 @@ namespace BLL.DramaDay.Extract
 
         private Dictionary<string, string> ExtactKeyValuePairs()
         {
-            List<string> lines = _dataNode.InnerText.Split("<br>").ToList();
+            List<string> lines = _dataNode.InnerText.Split("\n").ToList();
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
 
             foreach (string line in lines)
