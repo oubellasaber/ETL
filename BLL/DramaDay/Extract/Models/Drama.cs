@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace BLL.DramaDay.Extract.Models
 {
@@ -7,6 +8,8 @@ namespace BLL.DramaDay.Extract.Models
     {
         public string Title { get; set; }
         public List<string> OtherTitles { get; set; }
+        public string KoreanTitle => OtherTitles.FirstOrDefault(t => t.Any(c => (c >= '\u3131' && c <= '\u318E') ||
+                                                                          (c >= '\uAC00' && c <= '\uD7A3')))!;
         public int TotalEps { get; set; }
         public string BroadcastNetwork { get; set; }
 

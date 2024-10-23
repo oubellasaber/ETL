@@ -8,7 +8,7 @@ namespace BLL.DramaDay.Extract.Models
 {
     public class Host
     {
-        public string RawQualityFormat { get; set; }
+        
         public string HostName { get; set; }
         public string UnresolvedUrl { get; set; }
     }

@@ -1,41 +1,42 @@
-﻿using BLL.Services.FileNameExtractionService;
+﻿using BLL.Services.DownloadLinkService;
+using BLL.Services.FileNameExtractionService;
+using FilenameExtractors;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace FilenameExtractors
+namespace BLL.Services.DownloadLinkExtractionService
 {
-    public class FilenameExtractor
+    internal class DownloadLinkExtractor
     {
         private static readonly string[] _supportedDownloadServices =
         {
-            "pixeldrain.com",
             "datanodes.to",
-            "gdbot.site",
-            "gofile.io",
-            "buzzheavier.com",
-            "mega.nz",
-            "send.cm"
         };
 
         public string DownloadUrl { get; private set; }
         public string? Domain { get; private set; }
-        private IFilenameExtractor _extr;
+        private IDownloadLinkExtractor _extr;
 
-        private FilenameExtractor(string downloadUrl, IFilenameExtractor filenameExtractor)
+        private DownloadLinkExtractor(string downloadUrl, IDownloadLinkExtractor dlExtractor)
         {
             DownloadUrl = downloadUrl;
-            _extr = filenameExtractor;
+            _extr = dlExtractor;
         }
 
-        public static FilenameExtractor? Instance(string downloadUrl)
+        public static DownloadLinkExtractor? Instance(string downloadUrl)
         {
             if (!IsDownloadUrlSupported(ref downloadUrl, out string? domain))
                 return null;
 
-            IFilenameExtractor filenameExtractor = (new FilenameExtractorFactory()).GetFilenameExtractor(domain!, downloadUrl);
+            IDownloadLinkExtractor dlExtractor = (new DownloadLinkExtractorFactory()).GetDownloadLinkExtractor(domain!, downloadUrl);
 
-            return new FilenameExtractor(downloadUrl, filenameExtractor);
+            return new DownloadLinkExtractor(downloadUrl, dlExtractor);
         }
 
-        //public Task<string?> ExtractFilename() => await _extr.ExtractFilenameAsync(DownloadUrl);
+        public async Task<string?> ExtractDownloadLink() => await _extr.ExtractDownloadFileAsync(DownloadUrl);
 
         private static bool IsDownloadUrlSupported(ref string downloadUrl, out string? domain)
         {

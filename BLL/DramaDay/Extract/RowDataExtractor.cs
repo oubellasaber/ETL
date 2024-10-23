@@ -17,28 +17,9 @@ namespace BLL.DramaDay.Extract
             return new StandardEp
             {
                 Number = ExtractEpisodeNumber(cells[0].InnerText),
-                Hosts = ExtractLinkHosts(cells.Skip(1).ToList()) // Skip episode number cell and pass remaining cells
+                EpVersions = ExtractEpVersions(cells.Skip(1).ToList()) // Updated to match the new format using EpVersions
             };
         }
-
-        /* public static ((int start, int end) epsRange, List<LinkHost> linkHosts) ExtractRanged(HtmlNode tr)
-        {
-            var epsRange = ParseEpisodeRange(tr.SelectSingleNode(".//td").InnerText);
-            var linkHosts = ExtractLinkHosts(tr.SelectNodes(".//td").Skip(1).ToList());
-
-            return (epsRange, linkHosts);
-        }*/
-
-        /*public static SpecialEpisode ExtractSpecial(HtmlNode tr)
-        {
-            var cells = GetCells(tr);
-
-            return new SpecialEpisode
-            {
-                EpRawText = cells[0].InnerText,
-                LinkHosts = ExtractLinkHosts(cells.Skip(1).ToList())
-            };
-        }*/
 
         private static List<HtmlNode> GetCells(HtmlNode row)
         {
@@ -56,9 +37,9 @@ namespace BLL.DramaDay.Extract
             return -1; // Handle error, possibly throw exception or handle differently
         }
 
-        private static List<Host> ExtractLinkHosts(List<HtmlNode> cells)
+        private static List<EpVersion> ExtractEpVersions(List<HtmlNode> cells)
         {
-            // Extract link hosts from the given cells
+            // Extract link hosts and media formats from the given cells
             var mediaFormats = ExtractMediaFormats(cells[0].InnerHtml);
             var linkGroups = ExtractLinkGroups(cells[1].InnerHtml);
 
@@ -78,9 +59,9 @@ namespace BLL.DramaDay.Extract
             return cellHtml.Split("<br>", StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private static List<Host> MatchFormatsWithLinks(List<string> mediaFormats, string[] linkGroups)
+        private static List<EpVersion> MatchFormatsWithLinks(List<string> mediaFormats, string[] linkGroups)
         {
-            var linkHosts = new List<Host>();
+            var epVersions = new List<EpVersion>();
 
             // Match each format with its corresponding group of links
             for (int i = 0; i < mediaFormats.Count && i < linkGroups.Length; i++)
@@ -90,11 +71,15 @@ namespace BLL.DramaDay.Extract
 
                 if (links != null)
                 {
-                    linkHosts.AddRange(CreateLinkHostsForFormat(mediaFormat, links));
+                    epVersions.Add(new EpVersion
+                    {
+                        RawQualityFormat = mediaFormat,
+                        Hosts = CreateHostsFromLinks(links)
+                    });
                 }
             }
 
-            return linkHosts;
+            return epVersions;
         }
 
         private static HtmlNodeCollection ExtractLinksFromGroup(string linkGroupHtml)
@@ -103,24 +88,20 @@ namespace BLL.DramaDay.Extract
             return HtmlNode.CreateNode($"<div>{linkGroupHtml}</div>").SelectNodes(".//a");
         }
 
-        private static IEnumerable<Host> CreateLinkHostsForFormat(string mediaFormat, HtmlNodeCollection links)
+        private static List<Host> CreateHostsFromLinks(HtmlNodeCollection links)
         {
-            // Create LinkHost objects for each link under the current media format
+            // Create Host objects for each link
+            var hosts = new List<Host>();
             foreach (var link in links)
             {
-                yield return new Host
+                hosts.Add(new Host
                 {
                     UnresolvedUrl = link.GetAttributeValue("href", string.Empty),
-                    HostName = link.InnerText.Trim(),
-                    RawQualityFormat = mediaFormat
-                };
+                    HostName = link.InnerText.Trim()
+                });
             }
-        }
 
-        private static (int start, int end) ParseEpisodeRange(string episodeText)
-        {
-            var parts = episodeText.Split('-').Select(int.Parse).ToArray();
-            return (parts[0], parts[1]);
+            return hosts;
         }
     }
 }
